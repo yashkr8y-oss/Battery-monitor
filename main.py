@@ -1,6 +1,9 @@
 import time
-import psutil
-from winotify import Notification
+
+from config import POLL_INTERVAL, DEBOUNCE_TIME
+from battery import get_battery
+from notifier import show_notification
+from logger import log_event
 
 previous_state = None
 
@@ -9,7 +12,7 @@ print("Press Ctrl + C to stop.\n")
 
 while True:
 
-    battery = psutil.sensors_battery()
+    battery = get_battery()
 
     if battery is None:
         print("No battery detected.")
@@ -23,25 +26,43 @@ while True:
     elif charging != previous_state:
 
         if charging:
+
             print("🔌 Charging Started")
 
-            toast = Notification(
-                app_id="Battery Monitor",
-                title="Charging Started",
-                msg="Your laptop is charging again."
+            show_notification(
+                "Charging Started",
+                "Your laptop is charging again."
             )
-            toast.show()
+
+            log_event("Charging Started")
 
         else:
-            print("⚠ Charging Stopped")
 
-            toast = Notification(
-                app_id="Battery Monitor",
-                title="Charging Stopped",
-                msg="Your laptop is no longer charging!"
-            )
-            toast.show()
+            print("Checking if charging really stopped...")
 
-        previous_state = charging
+            time.sleep(DEBOUNCE_TIME)
 
-    time.sleep(2)
+            battery = get_battery()
+
+            if battery is not None and not battery.power_plugged:
+
+                print("⚠ Charging Stopped")
+
+                show_notification(
+                    "Charging Stopped",
+                    "Your laptop is no longer charging!"
+                )
+
+                log_event("Charging Stopped")
+
+            else:
+
+                print("False alarm ignored.")
+
+        # Update the previous state with the latest battery status
+        battery = get_battery()
+
+        if battery is not None:
+            previous_state = battery.power_plugged
+
+    time.sleep(POLL_INTERVAL)
