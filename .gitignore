@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual Environment
+.venv/
+venv/
+env/
+
+# VS Code
+.vscode/
+
+# Windows
+desktop.ini
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Environment Variables
+.env
+
+# Python cache
+.pytest_cache/
+.mypy_cache/
+
+# Distribution / Build
+build/
+dist/
+*.spec
+
+# OS files
+.DS_Store

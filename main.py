@@ -1,5 +1,5 @@
 import time
-
+from sound import play_alert
 from config import POLL_INTERVAL, DEBOUNCE_TIME
 from battery import get_battery
 from notifier import show_notification
@@ -52,6 +52,7 @@ while True:
                     "Charging Stopped",
                     "Your laptop is no longer charging!"
                 )
+                play_alert()
 
                 log_event("Charging Stopped")
 
